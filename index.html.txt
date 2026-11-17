@@ -1,0 +1,1296 @@
+tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                        heading: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        accent: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- تنسيقات CSS المخصصة للمجلة -->
+    <style>
+        /* تخصيص شريط التمرير (Scrollbar) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(13, 148, 136, 0.45);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(13, 148, 136, 0.75);
+        }
+
+        /* حركات انسيابية للنوافذ والإشعارات */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-up {
+            animation: fadeSlideUp 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans antialiased selection:bg-primary-500 selection:text-white">
+
+    <!-- ================= 1. شريط التنقل العلوي ================= -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- الشعار واسم المجلة -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary-600 to-teal-800 flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+                        <i class="fa-solid fa-compass text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-heading font-extrabold text-xl sm:text-2xl text-primary-800 dark:text-primary-400 leading-tight">
+                            آفاق التوجيه
+                        </h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-bold">التوجيه الطلابي بثانوية الجعدية</p>
+                    </div>
+                </div>
+
+                <!-- روابط القائمة للشاشات الكبيرة -->
+                <nav class="hidden md:flex items-center gap-6 font-semibold text-sm">
+                    <a href="#featured" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 transition">الرئيسية</a>
+                    <a href="#behavior-points-section" class="text-amber-600 dark:text-amber-400 hover:text-amber-700 font-bold flex items-center gap-1 transition">
+                        <i class="fa-solid fa-medal"></i> نقاط السلوك
+                    </a>
+                    <a href="#articles-section" onclick="filterByCategory('all')" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 transition">أحدث المقالات</a>
+                    <a href="#articles-section" onclick="filterByCategory('academic')" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 transition">التفوق والتحصيلي</a>
+                    <a href="#articles-section" onclick="filterByCategory('career')" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 transition">المسارات والجامعة</a>
+                    <a href="#counselor-corner" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 transition">اسأل الموجّه</a>
+                </nav>
+
+                <!-- أزرار التحكم (استيراد الطلاب، المفضلة، الوضع الليلي، القائمة للجوال) -->
+                <div class="flex items-center gap-2 sm:gap-2.5">
+                    <!-- أيقونة استيراد أسماء الطلاب -->
+                    <button onclick="openImportStudentsModal()" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition flex items-center gap-1.5 text-xs font-bold" title="استيراد أسماء طلاب المرحلة الثانوية">
+                        <i class="fa-solid fa-file-import text-base"></i>
+                        <span class="hidden lg:inline">استيراد الطلاب</span>
+                    </button>
+
+                    <!-- زر المقالات المحفوظة -->
+                    <button onclick="openBookmarksModal()" class="relative p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-primary-50 dark:hover:bg-slate-700 transition" title="المقالات المحفوظة">
+                        <i class="fa-regular fa-bookmark text-lg"></i>
+                        <span id="bookmark-count" class="hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent-500 text-white text-xs font-bold flex items-center justify-center shadow">0</span>
+                    </button>
+
+                    <!-- زر تبديل الوضع الليلي -->
+                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-primary-50 dark:hover:bg-slate-700 transition" title="تغيير المظهر">
+                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+
+                    <!-- زر القائمة للجوال -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- القائمة المنسدلة للجوال -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 pt-2 pb-5 space-y-2 shadow-lg">
+            <a href="#featured" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-bold text-primary-600 bg-primary-50 dark:bg-slate-800">الرئيسية</a>
+            <a href="#behavior-points-section" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-bold text-amber-600 bg-amber-50/70 dark:bg-amber-900/20"><i class="fa-solid fa-medal ml-1"></i> نقاط السلوك المتميز</a>
+            <button onclick="toggleMobileMenu(); openImportStudentsModal()" class="w-full text-right block px-4 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fa-solid fa-file-import ml-1 text-primary-600"></i> استيراد أسماء الطلاب</button>
+            <a href="#articles-section" onclick="filterByCategory('academic'); toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">التفوق والقدرات والتحصيلي</a>
+            <a href="#articles-section" onclick="filterByCategory('mental'); toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">الصحة النفسية للشباب</a>
+            <a href="#articles-section" onclick="filterByCategory('career'); toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">المسارات الثانوية والجامعة</a>
+            <a href="#counselor-corner" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">ركن استشارات الطلاب</a>
+        </div>
+    </header>
+
+    <!-- ================= 2. شريط العدد الحالي للمرحلة الثانوية ================= -->
+    <div class="bg-primary-900 text-white py-2.5 px-4 text-xs sm:text-sm">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-accent-500 text-slate-900 font-bold text-xs">ثانوية الجعدية • العدد 14</span>
+                <span class="text-primary-100">نحو بيئة ثانوية محفزة، انضباط سلوكي متميز، واستعداد واعٍ للمستقبل الجامعي</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-4 text-primary-200">
+                <span><i class="fa-solid fa-school ml-1"></i> ثانوية الجعدية (نظام المسارات)</span>
+                <span><i class="fa-solid fa-user-tie ml-1"></i> الموجه الطلابي: أ. حسين أحمد مباركي</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. قسم الغلاف والمقال الافتتاحي ================= -->
+    <section id="featured" class="relative overflow-hidden py-10 sm:py-16 bg-gradient-to-b from-primary-50/70 to-slate-50 dark:from-slate-800/40 dark:to-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- المقال الافتتاحي المميز -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700/80 transition hover:shadow-2xl">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <span class="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 text-xs font-bold">
+                            <i class="fa-solid fa-star ml-1 text-accent-500"></i> ملف المرحلة الثانوية
+                        </span>
+                        <span class="text-xs text-slate-400"><i class="fa-regular fa-clock ml-1"></i> قراءة 5 دقائق • +10 نقاط سلوك</span>
+                    </div>
+                    
+                    <h2 class="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 dark:text-white leading-snug mb-4">
+                        كيف توازن بين المدرسة واختبارات القدرات والتحصيلي دون ضغط نفسي؟
+                    </h2>
+                    
+                    <p class="text-slate-600 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+                        خريطة طريق عملية لطلاب المرحلة الثانوية تجمع بين تنظيم الوقت، استراتيجيات المذاكرة الذكية، وبناء السجل السلوكي والأكاديمي المتميز.
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
+                                أ.ح
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 dark:text-slate-200">أ. حسين أحمد مباركي</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">الموجه الطلابي بثانوية الجعدية</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="openArticleModal(1)" class="px-6 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-lg shadow-primary-600/25 transition flex items-center gap-2">
+                            <span>اقرأ الملف كاملاً</span>
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- بطاقات جانبية سريعة -->
+                <div class="lg:col-span-5 space-y-6">
+                    <!-- بطاقة إضاءة توجيهية -->
+                    <div class="bg-gradient-to-br from-primary-700 to-teal-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden">
+                        <i class="fa-solid fa-quote-right absolute top-4 left-4 text-6xl text-white/10"></i>
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-accent-400 text-xs font-bold mb-3">
+                            <i class="fa-solid fa-lightbulb ml-1"></i> إضاءة توجيهية
+                        </span>
+                        <h3 class="font-heading font-bold text-xl mb-2">النجاح لا يبدأ بالمثالية، بل بالخطوة الأولى</h3>
+                        <p id="daily-tip-text" class="text-primary-100 text-sm leading-relaxed mb-4">
+                            "انضباطك في الحضور المبكر والمشاركة الصفية في المرحلة الثانوية يرفع درجات السلوك والمواظبة ويختصر 70% من وقت المذاكرة."
+                        </p>
+                        <button onclick="nextDailyTip()" class="text-xs font-bold text-accent-400 hover:text-accent-300 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate"></i>
+                            <span>نصيحة توجيهية أخرى</span>
+                        </button>
+                    </div>
+
+                    <!-- بطاقة محاور التوجيه -->
+                    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-heading font-bold text-base text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-primary-600"></i>
+                            <span>محاور التوجيه للمرحلة الثانوية</span>
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="filterByCategory('academic'); document.getElementById('articles-section').scrollIntoView()" class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-right transition group">
+                                <i class="fa-solid fa-graduation-cap text-blue-600 dark:text-blue-400 text-lg mb-1 block group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">التفوق والقدرات</span>
+                                <span class="text-xs text-slate-500">المعدل والتحصيلي</span>
+                            </button>
+                            <button onclick="filterByCategory('mental'); document.getElementById('articles-section').scrollIntoView()" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-right transition group">
+                                <i class="fa-solid fa-heart-pulse text-emerald-600 dark:text-emerald-400 text-lg mb-1 block group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">الصحة النفسية</span>
+                                <span class="text-xs text-slate-500">إدارة ضغوط الثانوي</span>
+                            </button>
+                            <button onclick="filterByCategory('career'); document.getElementById('articles-section').scrollIntoView()" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-right transition group">
+                                <i class="fa-solid fa-briefcase text-amber-600 dark:text-amber-400 text-lg mb-1 block group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">المسارات والجامعة</span>
+                                <span class="text-xs text-slate-500">تخصصك ومستقبلك</span>
+                            </button>
+                            <button onclick="filterByCategory('family'); document.getElementById('articles-section').scrollIntoView()" class="p-3 rounded-2xl bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-right transition group">
+                                <i class="fa-solid fa-people-roof text-purple-600 dark:text-purple-400 text-lg mb-1 block group-hover:scale-110 transition-transform"></i>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">الأسرة والمدرسة</span>
+                                <span class="text-xs text-slate-500">دعم طالب الثانوي</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 4. منظومة نقاط السلوك المتميز واستيراد الطلاب ================= -->
+    <section id="behavior-points-section" class="py-12 bg-gradient-to-r from-amber-50/80 via-white to-primary-50/60 dark:from-slate-800/80 dark:via-slate-900 dark:to-slate-800/80 border-y border-amber-200/60 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-xs font-bold mb-2">
+                        <i class="fa-solid fa-award"></i>
+                        <span>مبادرة الانضباط والتميز السلوكي • ثانوية الجعدية</span>
+                    </div>
+                    <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">
+                        بنك نقاط السلوك المتميز لطلاب ثانوية الجعدية
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+                        اختر اسمك لجمع النقاط عند قراءة مقالات التوجيه، إتمام المقاييس، أو تسجيل مبادرة سلوكية إيجابية
+                    </p>
+                </div>
+
+                <!-- زر استيراد قائمة الطلاب -->
+                <button onclick="openImportStudentsModal()" class="px-5 py-3 rounded-2xl bg-slate-900 dark:bg-amber-500 hover:bg-slate-800 dark:hover:bg-amber-600 text-white dark:text-slate-900 font-bold text-sm shadow-lg transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-file-import text-base"></i>
+                    <span>استيراد أسماء الطلاب</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- لوحة جمع النقاط للطالب -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-7 shadow-md border border-slate-200/70 dark:border-slate-700">
+                    <h3 class="font-heading font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-check text-primary-600"></i>
+                        <span>بوابة الطالب لجمع النقاط</span>
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">اختر اسم الطالب (المرحلة الثانوية):</label>
+                            <select id="active-student-select" onchange="updateActiveStudentCard()" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            </select>
+                        </div>
+
+                        <!-- بطاقة رصيد الطالب الحالي -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-primary-600 to-teal-800 text-white flex items-center justify-between shadow-inner">
+                            <div>
+                                <span class="text-xs text-primary-100 block">الرصيد الحالي للنقاط</span>
+                                <h4 id="active-student-name" class="font-heading font-bold text-lg mt-0.5">--</h4>
+                                <span id="active-student-grade" class="text-[11px] bg-white/20 px-2 py-0.5 rounded-full inline-block mt-1">--</span>
+                            </div>
+                            <div class="text-center bg-white/15 px-4 py-2.5 rounded-2xl backdrop-blur-sm">
+                                <span id="active-student-points" class="font-heading font-extrabold text-3xl text-accent-400 block">0</span>
+                                <span class="text-[11px] text-white">نقطة سلوك</span>
+                            </div>
+                        </div>
+
+                        <!-- أزرار جمع النقاط الذاتية / السلوكيات الإيجابية -->
+                        <div>
+                            <p class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">إجراءات جمع نقاط السلوك المتميز:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <button onclick="claimBehaviorPoint('الحضور المبكر والانضباط الصفي', 5)" class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 text-right transition flex items-center justify-between">
+                                    <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300"><i class="fa-solid fa-clock ml-1"></i> انضباط وحضور</span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-emerald-600 text-white text-[11px] font-bold">+5</span>
+                                </button>
+                                <button onclick="claimBehaviorPoint('المبادرة التطوعية ومساعدة الزملاء', 10)" class="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-right transition flex items-center justify-between">
+                                    <span class="text-xs font-bold text-blue-800 dark:text-blue-300"><i class="fa-solid fa-hand-holding-heart ml-1"></i> مبادرة وتعاون</span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-blue-600 text-white text-[11px] font-bold">+10</span>
+                                </button>
+                                <button onclick="claimBehaviorPoint('المحافظة على ممتلكات المدرسة والنظافة', 5)" class="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800 text-right transition flex items-center justify-between">
+                                    <span class="text-xs font-bold text-amber-800 dark:text-amber-300"><i class="fa-solid fa-sparkles ml-1"></i> مسؤولية وبيئة</span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-amber-500 text-slate-900 text-[11px] font-bold">+5</span>
+                                </button>
+                                <button onclick="claimBehaviorPoint('المشاركة الفاعلة في أنشطة التوجيه', 15)" class="p-3 rounded-xl bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-right transition flex items-center justify-between">
+                                    <span class="text-xs font-bold text-purple-800 dark:text-purple-300"><i class="fa-solid fa-star ml-1"></i> تميز قيادي</span>
+                                    <span class="px-2 py-0.5 rounded-lg bg-purple-600 text-white text-[11px] font-bold">+15</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- لوحة شرف الطلاب المتميزين سلوكياً -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-7 shadow-md border border-slate-200/70 dark:border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                            <h3 class="font-heading font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-trophy text-amber-500"></i>
+                                <span>لوحة شرف السلوك المتميز (ثانوية الجعدية)</span>
+                            </h3>
+                            <span id="total-students-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">0 طالب</span>
+                        </div>
+
+                        <!-- قائمة الطلاب مرتبة حسب النقاط -->
+                        <div id="leaderboard-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs text-slate-500">
+                        <span><i class="fa-solid fa-circle-info text-primary-500 ml-1"></i> قراءة أي مقال تمنح الطالب المختار <strong>+10 نقاط</strong> تلقائياً!</span>
+                        <button onclick="resetStudentPoints()" class="text-rose-500 hover:underline font-bold">تصفير النقاط</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 5. قسم تصفح المقالات والبحث والفلترة ================= -->
+    <section id="articles-section" class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h2 class="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">
+                    مقالات وموضوعات العدد
+                </h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">اختر القسم المناسب أو ابحث عن موضوع يهمك</p>
+            </div>
+
+            <!-- حقل البحث الفوري -->
+            <div class="relative w-full md:w-80">
+                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="ابحث في عناوين ومحتوى المجلة..." 
+                    class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition shadow-sm">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+            </div>
+        </div>
+
+        <!-- أزرار التصنيفات (Tabs) -->
+        <div class="flex flex-wrap gap-2 mb-8" id="category-tabs">
+            <button data-cat="all" onclick="filterByCategory('all')" class="cat-btn active px-5 py-2.5 rounded-xl font-bold text-sm bg-primary-600 text-white shadow-md shadow-primary-600/20 transition">
+                الكل
+            </button>
+            <button data-cat="academic" onclick="filterByCategory('academic')" class="cat-btn px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                التفوق والقدرات
+            </button>
+            <button data-cat="mental" onclick="filterByCategory('mental')" class="cat-btn px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                الصحة النفسية
+            </button>
+            <button data-cat="career" onclick="filterByCategory('career')" class="cat-btn px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                المسارات والجامعة
+            </button>
+            <button data-cat="family" onclick="filterByCategory('family')" class="cat-btn px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                الأسرة والمدرسة
+            </button>
+        </div>
+
+        <!-- شبكة عرض المقالات -->
+        <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+
+        <!-- رسالة عدم وجود نتائج -->
+        <div id="no-results" class="hidden text-center py-16 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700">
+            <i class="fa-regular fa-folder-open text-5xl text-slate-300 dark:text-slate-600 mb-3"></i>
+            <h3 class="font-heading font-bold text-lg text-slate-700 dark:text-slate-300">لم نجد مقالات تطابق بحثك</h3>
+            <p class="text-sm text-slate-500 mt-1">جرب البحث بكلمات مختلفة أو استعرض جميع الأقسام</p>
+            <button onclick="resetFilters()" class="mt-4 px-5 py-2 rounded-xl bg-primary-600 text-white text-sm font-bold">عرض كل المقالات</button>
+        </div>
+    </section>
+
+    <!-- ================= 6. مقياس العادات الدراسية + ركن الاستشارات ================= -->
+    <section id="counselor-corner" class="py-14 bg-slate-100/80 dark:bg-slate-800/50 border-y border-slate-200/80 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- مقياس العادات الدراسية -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/60 dark:border-slate-700">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-xl text-slate-900 dark:text-white">مقياس عاداتك الدراسية</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">أجب على 3 أسئلة للحصول على توصية توجيهية و +5 نقاط سلوك</p>
+                        </div>
+                    </div>
+
+                    <div id="quiz-container" class="space-y-4 mt-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">1. هل لديك جدول أسبوعي محدد للمذاكرة؟</label>
+                            <select id="q1" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm">
+                                <option value="3">نعم، ألتزم به بشكل منتظم</option>
+                                <option value="2">أحياناً، حسب ضغط الواجبات</option>
+                                <option value="1">لا، أذاكر بشكل عشوائي</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">2. كيف تتعامل مع الهاتف أثناء المذاكرة؟</label>
+                            <select id="q2" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm">
+                                <option value="3">أضعه في وضع الصامت بعيداً عني</option>
+                                <option value="2">أتفقد الإشعارات بين الحين والآخر</option>
+                                <option value="1">يشتتني كثيراً طوال الوقت</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">3. كم ساعة تنام في المتوسط أيام الدراسة؟</label>
+                            <select id="q3" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm">
+                                <option value="3">من 7 إلى 8 ساعات بانتظام</option>
+                                <option value="2">من 5 إلى 6 ساعات</option>
+                                <option value="1">أقل من 5 ساعات وأسهر كثيراً</option>
+                            </select>
+                        </div>
+
+                        <button onclick="evaluateStudyHabits()" class="w-full py-3.5 rounded-2xl bg-slate-900 dark:bg-primary-600 hover:bg-slate-800 dark:hover:bg-primary-700 text-white font-bold text-sm transition shadow-md">
+                            احصل على تقييمك التوجيهي
+                        </button>
+
+                        <div id="quiz-result" class="hidden p-4 rounded-2xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ركن الاستشارات الطلابية -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200/60 dark:border-slate-700">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-11 h-11 rounded-2xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-xl text-slate-900 dark:text-white">ركن الاستشارات الطلابية</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">بإشراف الموجه الطلابي: أ. حسين أحمد مباركي (بسرية تامة)</p>
+                        </div>
+                    </div>
+
+                    <form id="consultation-form" onsubmit="submitConsultation(event)" class="space-y-4 mt-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">الاسم (أو اسم مستعار)</label>
+                                <input type="text" id="student-name" required placeholder="مثال: طالب طموح" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">مجال الاستشارة</label>
+                                <select id="consult-type" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm">
+                                    <option value="أكاديمي">صعوبات المذاكرة والتفوق</option>
+                                    <option value="نفسي">القلق والتوتر وبناء الثقة</option>
+                                    <option value="مهني">اختيار المسار والتخصص الجامعي</option>
+                                    <option value="اجتماعي">العلاقات المدرسية والتكيف</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">رسالتك للموجّه الطلابي</label>
+                            <textarea id="consult-message" rows="3" required placeholder="اكتب استفسارك أو المشكلة التي تواجهك بكل وضوح..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm transition shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>إرسال الاستشارة بسرية تامة</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 7. تذييل الصفحة ================= -->
+    <footer class="bg-slate-900 text-slate-300 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-slate-800">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-compass text-xl"></i>
+                        </div>
+                        <span class="font-heading font-extrabold text-xl text-white">التوجيه الطلابي بثانوية الجعدية</span>
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        منصة تربوية إلكترونية صادرة عن وحدة التوجيه الطلابي بثانوية الجعدية، تُعنى بتعزيز السلوك الإيجابي، التهيئة للاختبارات الوطنية، والإرشاد الأكاديمي والمهني.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-4">روابط سريعة</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#featured" class="hover:text-primary-400 transition">ملف العدد الحالي</a></li>
+                        <li><a href="#behavior-points-section" class="hover:text-primary-400 transition">نقاط السلوك المتميز</a></li>
+                        <li><a href="#articles-section" class="hover:text-primary-400 transition">مكتبة المقالات التربوية</a></li>
+                        <li><a href="#counselor-corner" class="hover:text-primary-400 transition">تواصل مع الموجه الطلابي</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-4">اشترك في نشرة المجلة</h4>
+                    <p class="text-xs text-slate-400 mb-3">احصل على تنبيه عند صدور الأعداد الجديدة والمطويات الإرشادية.</p>
+                    <form onsubmit="subscribeNewsletter(event)" class="flex gap-2">
+                        <input type="email" required placeholder="بريدك الإلكتروني..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white focus:outline-none focus:border-primary-500">
+                        <button type="submit" class="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm transition shrink-0">
+                            اشتراك
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>© 2026 مجلة آفاق التوجيه الطلابي الإلكترونية - ثانوية الجعدية. جميع الحقوق محفوظة.</p>
+                <p>إعداد وإشراف الموجه الطلابي: أ. حسين أحمد مباركي</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= 8. النوافذ المنبثقة (Modals & Toast) ================= -->
+
+    <!-- نافذة استيراد أسماء طلاب المرحلة الثانوية -->
+    <div id="import-students-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm p-4 flex items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-fade-up">
+            <div class="flex justify-between items-center px-6 py-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700">
+                <h3 class="font-heading font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-import text-amber-500"></i>
+                    <span>استيراد أسماء طلاب المرحلة الثانوية</span>
+                </h3>
+                <button onclick="closeImportStudentsModal()" class="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <!-- رفع ملف نصي أو CSV -->
+                <div class="p-4 rounded-2xl border-2 border-dashed border-primary-300 dark:border-primary-700 bg-primary-50/50 dark:bg-primary-900/10 text-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-primary-600 mb-2"></i>
+                    <p class="text-sm font-bold text-slate-800 dark:text-slate-200">استيراد من ملف (CSV أو TXT)</p>
+                    <p class="text-xs text-slate-500 mt-1 mb-3">يمكنك تصدير قائمة الطلاب من نظام نور كملف نصي أو CSV ورفعه هنا</p>
+                    <label class="inline-block px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold cursor-pointer transition shadow">
+                        <span>اختر الملف من جهازك</span>
+                        <input type="file" id="students-file-input" accept=".csv,.txt" onchange="handleStudentFileUpload(event)" class="hidden">
+                    </label>
+                </div>
+
+                <!-- اللصق المباشر للأسماء -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300">أو الصق قائمة أسماء الطلاب مباشرة (اسم في كل سطر):</label>
+                        <select id="import-grade-level" class="text-xs p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                            <option value="أول ثانوي">أول ثانوي</option>
+                            <option value="ثاني ثانوي">ثاني ثانوي</option>
+                            <option value="ثالث ثانوي">ثالث ثانوي</option>
+                        </select>
+                    </div>
+                    <textarea id="bulk-students-textarea" rows="4" placeholder="مثال:&#10;عبدالرحمن محمد العتيبي&#10;فيصل خالد الغامدي&#10;سعود عبدالعزيز الحربي" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                </div>
+
+                <div class="flex flex-wrap justify-between items-center gap-3 pt-2">
+                    <label class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                        <input type="checkbox" id="replace-existing-students" class="rounded text-primary-600">
+                        <span>استبدال القائمة الحالية بالأسماء المستوردة</span>
+                    </label>
+
+                    <button onclick="processBulkStudentImport()" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-sm shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span>اعتماد واستيراد الأسماء</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة قراءة المقال الكامل -->
+    <div id="article-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 my-auto animate-fade-up">
+            <!-- شريط أدوات القراءة العلوي -->
+            <div class="flex justify-between items-center px-6 py-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 font-bold ml-1">حجم الخط:</span>
+                    <button onclick="changeFontSize(-1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-bold hover:bg-slate-100">أ-</button>
+                    <button onclick="changeFontSize(1)" class="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm font-bold hover:bg-slate-100">أ+</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="modal-bookmark-btn" onclick="toggleCurrentBookmark()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-bold flex items-center gap-1.5 hover:text-amber-500 transition">
+                        <i class="fa-regular fa-bookmark"></i>
+                        <span>حفظ المقال</span>
+                    </button>
+                    <button onclick="closeArticleModal()" class="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- محتوى المقال -->
+            <div class="p-6 sm:p-10 max-h-[75vh] overflow-y-auto">
+                <div class="flex items-center gap-2 mb-3">
+                    <span id="modal-category" class="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-xs font-bold"></span>
+                    <span id="modal-read-time" class="text-xs text-slate-400"></span>
+                </div>
+                <h2 id="modal-title" class="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white leading-snug mb-4"></h2>
+                
+                <div class="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-slate-700">
+                    <div id="modal-author-avatar" class="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-sm"></div>
+                    <div>
+                        <p id="modal-author" class="text-sm font-bold text-slate-800 dark:text-slate-200"></p>
+                        <p id="modal-author-role" class="text-xs text-slate-500"></p>
+                    </div>
+                </div>
+
+                <div id="modal-body" class="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed text-base">
+                </div>
+            </div>
+
+            <!-- تذييل نافذة المقال -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <button onclick="copyArticleLink()" class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1.5">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>نسخ رابط المقال للمشاركة</span>
+                </button>
+                <button onclick="closeArticleModal()" class="px-5 py-2 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-xs font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة المقالات المحفوظة -->
+    <div id="bookmarks-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm p-4 flex items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700 animate-fade-up">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h3 class="font-heading font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bookmark text-accent-500"></i>
+                    <span>قائمة القراءة المحفوظة</span>
+                </h3>
+                <button onclick="closeBookmarksModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="bookmarks-list" class="p-6 max-h-96 overflow-y-auto space-y-3">
+            </div>
+        </div>
+    </div>
+
+    <!-- إشعار منبثق (Toast Notification) -->
+    <div id="toast" class="fixed bottom-5 left-5 z-50 hidden bg-slate-900 dark:bg-primary-700 text-white px-5 py-3.5 rounded-2xl shadow-xl text-sm font-bold flex items-center gap-2.5 animate-fade-up">
+        <i class="fa-solid fa-circle-check text-accent-400"></i>
+        <span id="toast-message">تم بنجاح</span>
+    </div>
+
+    <!-- ================= 9. البرمجة التفاعلية (JavaScript) ================= -->
+    <script>
+        // قاعدة بيانات مقالات المجلة للمرحلة الثانوية
+        const articlesData = [
+            {
+                id: 1,
+                title: "كيف توازن بين المدرسة واختبارات القدرات والتحصيلي دون ضغط نفسي؟",
+                category: "academic",
+                categoryName: "التفوق والقدرات",
+                author: "أ. حسين أحمد مباركي",
+                authorRole: "الموجه الطلابي بثانوية الجعدية",
+                avatar: "أ.ح",
+                readTime: "5 دقائق",
+                icon: "fa-calendar-check",
+                color: "blue",
+                excerpt: "خريطة طريق عملية لطلاب المرحلة الثانوية تجمع بين تنظيم الوقت، استراتيجيات المذاكرة الذكية، والاستعداد المبكر للاختبارات الوطنية.",
+                content: [
+                    "يواجه طالب المرحلة الثانوية تحدياً ثلاثياً يتمثل في الحفاظ على المعدل التراكمي للمدرسة، والاستعداد لاختبار القدرات العامة، والتهيئة للاختبار التحصيلي. السر في التفوق هنا ليس في السهر الطويل، بل في التخطيط الذكي.",
+                    "أولاً: قاعدة التجزئة الذكية (Divide & Conquer): خصص 45 دقيقة يومياً فقط للتدريب على تجميعات القدرات أو التحصيلي بتركيز كامل، بدلاً من تأجيلها إلى ما قبل الاختبار بأسبوع.",
+                    "ثانياً: تقنية الاسترجاع النشط (Active Recall): أثبتت الدراسات التربوية أن حل التدريبات العملية وشرح القوانين لنفسك يرسخ المعلومة في الذاكرة طويلة المدى أضعاف القراءة الصامتة.",
+                    "ثالثاً: الانضباط السلوكي والحضور الصفي: انتباهك داخل الحصة الدراسية يختصر عليك 70% من جهد المذاكرة المنزلية ويمنحك نقاط السلوك المتميز."
+                ]
+            },
+            {
+                id: 2,
+                title: "المرونة النفسية في المرحلة الثانوية: كيف تتجاوز تعثر الدرجات بثقة؟",
+                category: "mental",
+                categoryName: "الصحة النفسية",
+                author: "د. نورة القحطاني",
+                authorRole: "أخصائية علم النفس التربوي",
+                avatar: "د.ن",
+                readTime: "4 دقائق",
+                icon: "fa-seedling",
+                color: "emerald",
+                excerpt: "نتيجة اختبار واحد في المرحلة الثانوية ليست نهاية المطاف؛ تعلم مهارات المرونة النفسية وعقلية النمو.",
+                content: [
+                    "يمر طالب المرحلة الثانوية بضغوط تنافسية عالية قد تجعله يربط قيمته الذاتية بدرجة اختبار واحد. هنا تبرز أهمية (المرونة النفسية) كمهارة حياتية أساسية.",
+                    "تشير الدكتورة كارول دويك إلى مفهوم (عقلية النمو)، حيث ينظر الطالب إلى الصعوبات كفرصة لتطوير مهاراته، بدلاً من (العقلية الثابتة) التي تجعله يظن أن قدراته محدودة.",
+                    "خطوات عملية: 1- حلل أسباب الخطأ بموضوعية. 2- مارس الرياضة لتفريغ التوتر الذهني. 3- تواصل مع الموجه الطلابي في مدرستك الثانوية لبناء خطة دعم فردية."
+                ]
+            },
+            {
+                id: 3,
+                title: "مسارات المرحلة الثانوية وبوصلة التخصص الجامعي وسوق العمل 2030",
+                category: "career",
+                categoryName: "المسارات والجامعة",
+                author: "م. طارق الزهراني",
+                authorRole: "مستشار التوجيه المهني",
+                avatar: "م.ط",
+                readTime: "6 دقائق",
+                icon: "fa-rocket",
+                color: "amber",
+                excerpt: "دليل طلاب الأول والثاني والثالث ثانوي لاختيار المسار المناسب والتخصص الجامعي الواعد في ظل التحول الرقمي.",
+                content: [
+                    "يمنح نظام المسارات في المرحلة الثانوية الطالب فرصة استكشاف ميوله مبكراً (المسار العام، علوم الحاسب والهندسة، الصحة والحياة، إدارة الأعمال، المسار الشرعي).",
+                    "لتحقيق اختيار جامعي موفق، نعتمد على مثلث الاختيار المهني: (الرغبة، القدرة، الفرصة في سوق العمل المستقبلي).",
+                    "استثمر حصص الإتقان ومشاريع التخرج في المرحلة الثانوية لبناء ملف إنجاز يعكس شغفك ومهاراتك القيادية والسلوكية."
+                ]
+            },
+            {
+                id: 4,
+                title: "الشراكة بين الأسرة والمدرسة الثانوية: دعم الاستقلالية وبناء الثقة",
+                category: "family",
+                categoryName: "الأسرة والمدرسة",
+                author: "أ. هدى الغامدي",
+                authorRole: "مشرفة التوجيه الأسري",
+                avatar: "أ.هـ",
+                readTime: "4 دقائق",
+                icon: "fa-hands-holding-child",
+                color: "purple",
+                excerpt: "كيف يرافق الوالدان ابنهم في المرحلة الثانوية بروح الصداقة والتشجيع بعيداً عن المقارنة والقلق الزائد.",
+                content: [
+                    "طالب المرحلة الثانوية يمر بمرحلة النضج وبناء الهوية الشخصية، لذا يحتاج إلى أسلوب حواري يحترم استقلاليته ويمنحه الثقة في اتخاذ قراراته الدراسية.",
+                    "تجنبوا مقارنة الطالب بأقرانه؛ فلكل شاب مساره ونقاط قوته الخاصة التي تستحق التقدير والتحفيز.",
+                    "متابعة السجل السلوكي والأكاديمي عبر منصة مدرستي ومشاركة الطالب في احتفالات تكريم السلوك المتميز تعزز لديه روح الانتماء والمسؤولية."
+                ]
+            },
+            {
+                id: 5,
+                title: "المواطنة الرقمية والانضباط السلوكي: أخلاقيات طالب الثانوي في الفضاء الإلكتروني",
+                category: "mental",
+                categoryName: "الصحة النفسية",
+                author: "أ. خالد الحربي",
+                authorRole: "أخصائي التوجيه السلوكي",
+                avatar: "أ.خ",
+                readTime: "5 دقائق",
+                icon: "fa-shield-halved",
+                color: "emerald",
+                excerpt: "كيف تحمي سمعتك الرقمية وتلتزم بقواعد السلوك والمواظبة في المدرسة ومنصات التواصل الاجتماعي.",
+                content: [
+                    "تُعد درجات السلوك والمواظبة في المرحلة الثانوية ركيزة أساسية تعكس التزام الطالب وأخلاقياته داخل المدرسة وخارجها.",
+                    "يمتد السلوك المتميز ليشمل التعامل الراقي في مجموعات الدراسة الرقمية، واحترام خصوصية المعلمين والزملاء، وتجنب الشائعات أو التنمر الإلكتروني.",
+                    "تذكر أن بصمتك الرقمية وسجلك السلوكي المتميز هما بطاقة عبورك نحو المنح الدراسية والفرص القيادية مستقبلاً."
+                ]
+            },
+            {
+                id: 6,
+                title: "إدارة الأولويات لطالب الثانوي: كيف تجمع بين التفوق والأنشطة الطلابية؟",
+                category: "academic",
+                categoryName: "التفوق والقدرات",
+                author: "أ. حسين أحمد مباركي",
+                authorRole: "الموجه الطلابي بثانوية الجعدية",
+                avatar: "أ.ح",
+                readTime: "4 دقائق",
+                icon: "fa-scale-balanced",
+                color: "blue",
+                excerpt: "المشاركة في الأندية المدرسية والتطوع تمنحك نقاط سلوك ومهارات قيادية دون أن تؤثر على معدلك الدراسي.",
+                content: [
+                    "تُحتسب ساعات العمل التطوعي والمشاركة في الأنشطة الطلابية ضمن متطلبات التخرج في المرحلة الثانوية، وتُعد رافداً مهماً لنقاط السلوك المتميز.",
+                    "استخدم مصفوفة الأولويات لتنظيم أسبوعك: أنجز الواجبات والمراجعة اليومية أولاً، ثم خصص وقتاً ثابتاً للأندية الطلابية والرياضة.",
+                    "التوازن بين التحصيل العلمي والنشاط اللاصفي يصنع شخصية متكاملة قادرة على النجاح في الحياة الجامعية."
+                ]
+            }
+        ];
+
+        // قائمة النصائح التوجيهية المتجددة للمرحلة الثانوية
+        const dailyTips = [
+            "\"انضباطك في الحضور المبكر والمشاركة الصفية في المرحلة الثانوية يرفع درجات السلوك والمواظبة ويختصر 70% من وقت المذاكرة.\"",
+            "\"خصص 40 دقيقة يومياً للتدرب على أسئلة القدرات والتحصيلي؛ الاستمرارية أهم من الكثافة المفاجئة.\"",
+            "\"سجلك في العمل التطوعي ونقاط السلوك المتميز يميزان ملفك عند التقديم على الجامعات والمنح.\"",
+            "\"طلب الاستشارة من الموجه الطلابي في مدرستك الثانوية يساعدك على اختيار مسارك الجامعي بثقة ووضوح.\""
+        ];
+
+        // قائمة طلاب المرحلة الثانوية ونقاط السلوك المتميز
+        const defaultSecondaryStudents = [
+            { id: 101, name: "عبدالرحمن محمد العتيبي", grade: "ثالث ثانوي", points: 85 },
+            { id: 102, name: "فيصل خالد الغامدي", grade: "ثاني ثانوي", points: 70 },
+            { id: 103, name: "سعود عبدالعزيز الحربي", grade: "أول ثانوي", points: 65 },
+            { id: 104, name: "زياد طارق الزهراني", grade: "ثالث ثانوي", points: 55 },
+            { id: 105, name: "عمر بندر القحطاني", grade: "ثاني ثانوي", points: 45 }
+        ];
+
+        // حالة التطبيق (State)
+        let currentCategory = 'all';
+        let currentSearch = '';
+        let currentArticleId = null;
+        let currentFontSize = 16;
+        let currentTipIndex = 0;
+        let bookmarkedIds = JSON.parse(localStorage.getItem('guidance_bookmarks') || '[]');
+        let studentsList = JSON.parse(localStorage.getItem('secondary_students_points')) || defaultSecondaryStudents;
+        let activeStudentId = parseInt(localStorage.getItem('active_secondary_student_id')) || (studentsList[0]?.id || null);
+
+        // تهيئة الصفحة عند التحميل
+        document.addEventListener('DOMContentLoaded', () => {
+            renderArticles();
+            updateBookmarkBadge();
+            renderStudentsSystem();
+            
+            if (localStorage.getItem('guidance_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+            }
+        });
+
+        // ================= منظومة نقاط السلوك المتميز واستيراد الطلاب =================
+
+        function saveStudentsData() {
+            localStorage.setItem('secondary_students_points', JSON.stringify(studentsList));
+            if (activeStudentId) {
+                localStorage.setItem('active_secondary_student_id', activeStudentId);
+            }
+        }
+
+        function renderStudentsSystem() {
+            const selectEl = document.getElementById('active-student-select');
+            const leaderboardEl = document.getElementById('leaderboard-list');
+            const totalBadge = document.getElementById('total-students-badge');
+
+            if (!studentsList.length) {
+                selectEl.innerHTML = '<option value="">لا يوجد طلاب - قم باستيراد القائمة</option>';
+                leaderboardEl.innerHTML = '<p class="text-center text-sm text-slate-400 py-8">قائمة الطلاب فارغة حالياً. اضغط على "استيراد أسماء الطلاب" لإضافتهم.</p>';
+                totalBadge.textContent = '0 طالب';
+                return;
+            }
+
+            if (!studentsList.some(s => s.id === activeStudentId)) {
+                activeStudentId = studentsList[0].id;
+            }
+
+            selectEl.innerHTML = studentsList.map(s => 
+                `<option value="${s.id}" ${s.id === activeStudentId ? 'selected' : ''}>${s.name} (${s.grade}) - ${s.points} نقطة</option>`
+            ).join('');
+
+            updateActiveStudentCard();
+
+            const sortedStudents = [...studentsList].sort((a, b) => b.points - a.points);
+            totalBadge.textContent = `${studentsList.length} طالب (المرحلة الثانوية)`;
+
+            leaderboardEl.innerHTML = sortedStudents.map((student, index) => {
+                let rankBadge = `<span class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center justify-center">${index + 1}</span>`;
+                if (index === 0) rankBadge = `<span class="w-7 h-7 rounded-full bg-amber-400 text-slate-900 font-extrabold text-xs flex items-center justify-center shadow"><i class="fa-solid fa-crown"></i></span>`;
+                else if (index === 1) rankBadge = `<span class="w-7 h-7 rounded-full bg-slate-300 text-slate-800 font-extrabold text-xs flex items-center justify-center">2</span>`;
+                else if (index === 2) rankBadge = `<span class="w-7 h-7 rounded-full bg-amber-700/80 text-white font-extrabold text-xs flex items-center justify-center">3</span>`;
+
+                const isSelected = student.id === activeStudentId;
+                return `
+                <div onclick="selectStudentFromBoard(${student.id})" class="p-3 rounded-2xl border ${isSelected ? 'border-primary-500 bg-primary-50/60 dark:bg-primary-900/20' : 'border-slate-100 dark:border-slate-700/70 bg-slate-50/70 dark:bg-slate-700/30'} flex items-center justify-between gap-3 cursor-pointer hover:border-primary-400 transition">
+                    <div class="flex items-center gap-3">
+                        ${rankBadge}
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">${student.name}</h4>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400">${student.grade}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 font-extrabold text-xs">
+                            ${student.points} نقطة
+                        </span>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateActiveStudentCard() {
+            const selectEl = document.getElementById('active-student-select');
+            activeStudentId = parseInt(selectEl.value);
+            const student = studentsList.find(s => s.id === activeStudentId);
+            if (!student) return;
+
+            document.getElementById('active-student-name').textContent = student.name;
+            document.getElementById('active-student-grade').textContent = student.grade;
+            document.getElementById('active-student-points').textContent = student.points;
+            saveStudentsData();
+        }
+
+        function selectStudentFromBoard(id) {
+            activeStudentId = id;
+            renderStudentsSystem();
+        }
+
+        function claimBehaviorPoint(reason, pointsToAdd) {
+            const student = studentsList.find(s => s.id === activeStudentId);
+            if (!student) {
+                showToast('يرجى اختيار اسم الطالب أو استيراد قائمة الطلاب أولاً');
+                return;
+            }
+            student.points += pointsToAdd;
+            saveStudentsData();
+            renderStudentsSystem();
+            showToast(`أحسنت يا ${student.name}! تم إضافة +${pointsToAdd} نقاط (${reason})`);
+        }
+
+        function resetStudentPoints() {
+            studentsList.forEach(s => s.points = 0);
+            saveStudentsData();
+            renderStudentsSystem();
+            showToast('تم تصفير نقاط السلوك لجميع الطلاب لبداية فترة جديدة');
+        }
+
+        function openImportStudentsModal() {
+            document.getElementById('import-students-modal').classList.remove('hidden');
+        }
+
+        function closeImportStudentsModal() {
+            document.getElementById('import-students-modal').classList.add('hidden');
+        }
+
+        function handleStudentFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('bulk-students-textarea').value = e.target.result;
+                showToast('تم تحميل الأسماء من الملف، اضغط "اعتماد واستيراد الأسماء"');
+            };
+            reader.readAsText(file);
+        }
+
+        function processBulkStudentImport() {
+            const rawText = document.getElementById('bulk-students-textarea').value;
+            const defaultGrade = document.getElementById('import-grade-level').value;
+            const replaceExisting = document.getElementById('replace-existing-students').checked;
+
+            const lines = rawText.split(/\r?\n/)
+                .map(line => line.split(',')[0].replace(/["']/g, '').trim())
+                .filter(name => name.length > 2);
+
+            if (lines.length === 0) {
+                showToast('يرجى إدخال اسم واحد على الأقل أو رفع ملف صالح');
+                return;
+            }
+
+            const newEntries = lines.map((name, idx) => ({
+                id: Date.now() + idx,
+                name: name,
+                grade: defaultGrade,
+                points: 10
+            }));
+
+            if (replaceExisting) {
+                studentsList = newEntries;
+            } else {
+                studentsList = [...studentsList, ...newEntries];
+            }
+
+            activeStudentId = newEntries[0].id;
+            saveStudentsData();
+            renderStudentsSystem();
+            document.getElementById('bulk-students-textarea').value = '';
+            closeImportStudentsModal();
+            showToast(`تم استيراد ${newEntries.length} طالب للمرحلة الثانوية بنجاح!`);
+        }
+
+        // ================= عرض المقالات والبحث والفلترة =================
+
+        function renderArticles() {
+            const grid = document.getElementById('articles-grid');
+            const noResults = document.getElementById('no-results');
+            
+            const filtered = articlesData.filter(article => {
+                const matchCategory = currentCategory === 'all' || article.category === currentCategory;
+                const searchLower = currentSearch.toLowerCase().trim();
+                const matchSearch = !searchLower || 
+                    article.title.toLowerCase().includes(searchLower) || 
+                    article.excerpt.toLowerCase().includes(searchLower) ||
+                    article.author.toLowerCase().includes(searchLower);
+                return matchCategory && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            
+            const colorMap = {
+                blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+                emerald: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+                amber: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+                purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+            };
+
+            grid.innerHTML = filtered.map(article => {
+                const isBookmarked = bookmarkedIds.includes(article.id);
+                return `
+                <article class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-100 dark:border-slate-700/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${colorMap[article.color] || colorMap.blue}">
+                                <i class="fa-solid ${article.icon} ml-1"></i> ${article.categoryName}
+                            </span>
+                            <button onclick="toggleBookmark(${article.id}, event)" class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-amber-50 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-500 transition flex items-center justify-center" title="حفظ المقال">
+                                <i class="${isBookmarked ? 'fa-solid text-amber-500' : 'fa-regular'} fa-bookmark"></i>
+                            </button>
+                        </div>
+
+                        <h3 onclick="openArticleModal(${article.id})" class="font-heading font-bold text-lg sm:text-xl text-slate-900 dark:text-white leading-snug mb-3 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition">
+                            ${article.title}
+                        </h3>
+
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-5 line-clamp-3">
+                            ${article.excerpt}
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-xs">
+                                ${article.avatar}
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-800 dark:text-slate-200">${article.author}</p>
+                                <p class="text-[11px] text-slate-400"><i class="fa-regular fa-clock ml-1"></i>${article.readTime}</p>
+                            </div>
+                        </div>
+
+                        <button onclick="openArticleModal(${article.id})" class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 flex items-center gap-1 py-1.5 px-3 rounded-xl bg-primary-50/70 dark:bg-primary-900/20 transition">
+                            <span>قراءة</span>
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === category) {
+                    btn.className = 'cat-btn active px-5 py-2.5 rounded-xl font-bold text-sm bg-primary-600 text-white shadow-md shadow-primary-600/20 transition';
+                } else {
+                    btn.className = 'cat-btn px-5 py-2.5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition';
+                }
+            });
+            renderArticles();
+        }
+
+        function handleSearch() {
+            currentSearch = document.getElementById('search-input').value;
+            renderArticles();
+        }
+
+        function resetFilters() {
+            currentCategory = 'all';
+            currentSearch = '';
+            document.getElementById('search-input').value = '';
+            filterByCategory('all');
+        }
+
+        // ================= قراءة المقال والمحفوظات =================
+
+        function openArticleModal(id) {
+            const article = articlesData.find(a => a.id === id);
+            if (!article) return;
+
+            window.readArticlesSession = window.readArticlesSession || new Set();
+            if (!window.readArticlesSession.has(id) && activeStudentId) {
+                window.readArticlesSession.add(id);
+                const student = studentsList.find(s => s.id === activeStudentId);
+                if (student) {
+                    student.points += 10;
+                    saveStudentsData();
+                    renderStudentsSystem();
+                    showToast(`رائع يا ${student.name}! حصلت على +10 نقاط سلوك لقراءة المقال`);
+                }
+            }
+
+            currentArticleId = id;
+            document.getElementById('modal-category').textContent = article.categoryName;
+            document.getElementById('modal-read-time').innerHTML = `<i class="fa-regular fa-clock ml-1"></i> ${article.readTime}`;
+            document.getElementById('modal-title').textContent = article.title;
+            document.getElementById('modal-author').textContent = article.author;
+            document.getElementById('modal-author-role').textContent = article.authorRole;
+            document.getElementById('modal-author-avatar').textContent = article.avatar;
+
+            const bodyContainer = document.getElementById('modal-body');
+            bodyContainer.style.fontSize = `${currentFontSize}px`;
+            bodyContainer.innerHTML = article.content.map(paragraph => `<p>${paragraph}</p>`).join('');
+
+            updateModalBookmarkBtn();
+            document.getElementById('article-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeArticleModal() {
+            document.getElementById('article-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeFontSize(delta) {
+            currentFontSize = Math.min(22, Math.max(14, currentFontSize + delta * 2));
+            document.getElementById('modal-body').style.fontSize = `${currentFontSize}px`;
+        }
+
+        function toggleBookmark(id, event) {
+            if (event) event.stopPropagation();
+            const index = bookmarkedIds.indexOf(id);
+            if (index === -1) {
+                bookmarkedIds.push(id);
+                showToast('تم حفظ المقال في قائمة القراءة');
+            } else {
+                bookmarkedIds.splice(index, 1);
+                showToast('تمت إزالة المقال من المحفوظات');
+            }
+            localStorage.setItem('guidance_bookmarks', JSON.stringify(bookmarkedIds));
+            updateBookmarkBadge();
+            renderArticles();
+            if (currentArticleId === id) updateModalBookmarkBtn();
+        }
+
+        function toggleCurrentBookmark() {
+            if (currentArticleId) toggleBookmark(currentArticleId);
+        }
+
+        function updateModalBookmarkBtn() {
+            const btn = document.getElementById('modal-bookmark-btn');
+            const isSaved = bookmarkedIds.includes(currentArticleId);
+            if (isSaved) {
+                btn.innerHTML = `<i class="fa-solid fa-bookmark text-amber-500"></i> <span>محفوظ</span>`;
+            } else {
+                btn.innerHTML = `<i class="fa-regular fa-bookmark"></i> <span>حفظ المقال</span>`;
+            }
+        }
+
+        function updateBookmarkBadge() {
+            const badge = document.getElementById('bookmark-count');
+            if (bookmarkedIds.length > 0) {
+                badge.textContent = bookmarkedIds.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function openBookmarksModal() {
+            const list = document.getElementById('bookmarks-list');
+            const savedArticles = articlesData.filter(a => bookmarkedIds.includes(a.id));
+            
+            if (savedArticles.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-regular fa-bookmark text-4xl mb-2"></i>
+                        <p class="text-sm">لا توجد مقالات محفوظة حالياً.</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = savedArticles.map(a => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-700/50 flex justify-between items-center gap-3">
+                        <div class="cursor-pointer" onclick="closeBookmarksModal(); openArticleModal(${a.id})">
+                            <span class="text-[11px] font-bold text-primary-600 dark:text-primary-400">${a.categoryName}</span>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-white line-clamp-1">${a.title}</h4>
+                        </div>
+                        <button onclick="toggleBookmark(${a.id}); openBookmarksModal()" class="text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-600 p-2 rounded-lg text-xs" title="حذف">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('bookmarks-modal').classList.remove('hidden');
+        }
+
+        function closeBookmarksModal() {
+            document.getElementById('bookmarks-modal').classList.add('hidden');
+        }
+
+        function copyArticleLink() {
+            const tempInput = document.createElement('input');
+            tempInput.value = window.location.href;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('تم نسخ رابط المقال لمشاركته');
+        }
+
+        // ================= الأدوات التفاعلية والمظهر =================
+
+        function nextDailyTip() {
+            currentTipIndex = (currentTipIndex + 1) % dailyTips.length;
+            document.getElementById('daily-tip-text').textContent = dailyTips[currentTipIndex];
+        }
+
+        function evaluateStudyHabits() {
+            const score = parseInt(document.getElementById('q1').value) + 
+                          parseInt(document.getElementById('q2').value) + 
+                          parseInt(document.getElementById('q3').value);
+            
+            const resultBox = document.getElementById('quiz-result');
+            let title = '';
+            let advice = '';
+
+            if (score >= 8) {
+                title = '🌟 مستوى متميز! (عادات دراسية صحية)';
+                advice = 'أنت تمتلك تنظيماً رائعاً لوقتك ونومك. استمر على هذا النهج، وننصحك بقراءة مقال "مسارات المرحلة الثانوية" للتخطيط المبكر لتخصصك الجامعي.';
+            } else if (score >= 5) {
+                title = '👍 مستوى جيد (يحتاج إلى بعض الضبط)';
+                advice = 'لديك أساس جيد، لكن تقليل المشتتات الرقمية وتثبيت ساعات النوم سيرفعان من تركيزك بشكل ملحوظ. راجع ملف العدد الرئيسي لخطوات عملية.';
+            } else {
+                title = '💡 فرصة رائعة للتحسين!';
+                advice = 'يبدو أنك تواجه تشتتاً وضغطاً في تنظيم وقتك. ابدأ اليوم بخطوة بسيطة: ضع الهاتف في غرفة أخرى لمدة 30 دقيقة فقط أثناء المذاكرة، وتواصل مع الموجه الطلابي لمساعدتك في بناء جدول مريح.';
+            }
+
+            const student = studentsList.find(s => s.id === activeStudentId);
+            if (student) {
+                student.points += 5;
+                saveStudentsData();
+                renderStudentsSystem();
+                advice += ` (تمت إضافة +5 نقاط سلوك لرصيد الطالب: ${student.name})`;
+            }
+
+            resultBox.innerHTML = `<h4 class="font-bold text-primary-800 dark:text-primary-300 mb-1">${title}</h4><p class="text-slate-700 dark:text-slate-300 text-xs leading-relaxed">${advice}</p>`;
+            resultBox.classList.remove('hidden');
+        }
+
+        function submitConsultation(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name').value;
+            document.getElementById('consultation-form').reset();
+            showToast(`شكراً لك يا ${name}، وصلت رسالتك إلى الموجه الطلابي أ. حسين أحمد مباركي بسرية تامة.`);
+        }
+
+        function subscribeNewsletter(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('تم اشتراكك في نشرة مجلة آفاق التوجيه بنجاح!');
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            html.classList.toggle('dark');
+            
+            if (html.classList.contains('dark')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('guidance_theme', 'dark');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('guidance_theme', 'light');
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('hidden');
+            
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+    </script>
+</body><!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجلة التوجيه الطلابي الإلكترونية | ثانوية الجعدية</title>
+    
+    <!-- استيراد خطوط Tajawal و Cairo من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+</html>
